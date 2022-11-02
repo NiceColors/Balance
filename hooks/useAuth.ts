@@ -5,6 +5,7 @@ import { appAuth } from '../config/firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRecoilState } from 'recoil'
 import { recoilAuth } from './recoilAuth';
+import jwt from 'jwt-decode'
 
 function useAuth() {
     const [token, setToken] = useRecoilState(recoilAuth)
@@ -18,7 +19,11 @@ function useAuth() {
       const storeData = async (value: OAuthCredential) => {
         try {
           await AsyncStorage.setItem('@storage_Key', JSON.stringify(value))
-          setToken(value)
+          if(value.idToken) {
+           console.log();
+           setToken(jwt(value?.idToken))
+          }
+          
         } catch (e) {
           // saving error
         }

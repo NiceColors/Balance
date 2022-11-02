@@ -9,10 +9,14 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import Home from '../screens/Home';
-import { RootStackParamList, RootTabParamList } from '../types';
+import { RootStackParamList, RootTabParamList, TUserToken } from '../types';
 import Login from '../screens/Login';
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { recoilAuth } from '../hooks/recoilAuth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
+import jwt from 'jwt-decode'
+
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
     <NavigationContainer
@@ -25,10 +29,43 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   const [logged, setLogged] = React.useState(false)
-  const token = useRecoilValue(recoilAuth)
+  const [token, setToken] = useRecoilState(recoilAuth)
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@storage_Key')
+      if(value !== null) {
+        if (await LocalAuthentication.getEnrolledLevelAsync() !== 2) {
+          return
+        }
+        if (await LocalAuthentication.isEnrolledAsync() !== true) {
+          return
+        }
+       const auth =  await LocalAuthentication.authenticateAsync({
+        cancelLabel: "Cancelar",
+        disableDeviceFallback: true,
+        promptMessage: "Use a digital para continuar"
+       })
+
+       if (auth.success === true) {
+          const user: TUserToken = jwt(value)
+          setToken(user)
+          setLogged(true)
+       }
+      }
+    } catch(e) {
+      // error reading value
+    }
+  }
+
+  React.useEffect(() => {
+    if (!token.name) {
+      getData()
+    }
+  },[])
   
   React.useEffect(() => {
-    if (token.idToken) {
+    if (token.name) {
       setLogged(true)
     }
   },[token])
