@@ -1,30 +1,16 @@
-import { StyleSheet } from 'react-native';
-
-import { Text, View } from '../components/Themed';
+import { View } from 'react-native'
+import { Greetings, PageContainer, Title } from '../components/Container'
+import { Text } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'Home'>) {
+
+export default function Home({ navigation }: RootTabScreenProps<'Home'>) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Balance</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+    <PageContainer>
+        <Greetings>
+          <Text>Bem vindo de volta</Text>
+          <Title >Paçoca</Title>
+        </Greetings>
+    </PageContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});

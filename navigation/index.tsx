@@ -19,7 +19,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={DarkTheme}>
       <RootNavigator />
     </NavigationContainer>
   );
@@ -29,7 +29,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      defaultScreenOptions={{
+        headerShown: false
+      }}
+    >
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
@@ -45,16 +49,19 @@ function BottomTabNavigator() {
     <BottomTab.Navigator
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
+        headerShown: false,
       }}>
+      <>
       <BottomTab.Screen
         name="Home"
         component={Home}
         options={({ navigation }) => ({
-          title: 'Balance',
+          title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-         
         })}
       />
+      
+      </>
     </BottomTab.Navigator>
   );
 }
