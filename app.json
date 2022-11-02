@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "felpocalorias",
-    "slug": "felpocalorias",
+    "name": "Balance",
+    "slug": "balance",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
