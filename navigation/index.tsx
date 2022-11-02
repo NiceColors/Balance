@@ -2,23 +2,20 @@ import * as React from 'react';
 
 import { FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ColorSchemeName, Pressable } from 'react-native';
-
+import { ColorSchemeName } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import Home from '../screens/Home';
-
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
-
-import LinkingConfiguration from './LinkingConfiguration';
-
+import { RootStackParamList, RootTabParamList } from '../types';
+import Login from '../screens/Login';
+import { useRecoilValue } from 'recoil'
+import { recoilAuth } from '../hooks/recoilAuth';
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
     <NavigationContainer
-      linking={LinkingConfiguration}
       theme={DarkTheme}>
       <RootNavigator />
     </NavigationContainer>
@@ -26,16 +23,30 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
 function RootNavigator() {
+  const [logged, setLogged] = React.useState(false)
+  const token = useRecoilValue(recoilAuth)
+  
+  React.useEffect(() => {
+    if (token.idToken) {
+      setLogged(true)
+    }
+  },[token])
+  
   return (
     <Stack.Navigator
       defaultScreenOptions={{
         headerShown: false
       }}
     >
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+      {!logged ? (
+        <Stack.Screen name="SignIn" component={Login} options={{ headerShown: false }} />
+      ) : (
+      <>
+        <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+      </>
+      )}
     </Stack.Navigator>
   );
 }
