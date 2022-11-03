@@ -1,4 +1,5 @@
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Image } from "react-native";
+import { useRecoilValue } from "recoil";
 import {
   FoodTracking,
   FTHeaderContainer,
@@ -16,17 +17,23 @@ import {
   SubTitle,
 } from "../components/Container";
 import { Text } from "../components/Themed";
+import { recoilAuth } from "../hooks/recoilAuth";
 import { RootTabScreenProps } from "../types";
 
 export default function Home({ navigation }: RootTabScreenProps<"Home">) {
+const user = useRecoilValue(recoilAuth)
+
   return (
     <PageContainer>
       <GreetingsContainer>
         <Greetings>
           <Text>Bem vindo de volta</Text>
-          <Title>Paçoca</Title>
+          <Title>{user.given_name}</Title>
         </Greetings>
-        <Profile />
+        <Profile source={{
+            uri: user.picture
+          }}>
+        </Profile>
       </GreetingsContainer>
 
 
@@ -72,3 +79,5 @@ export default function Home({ navigation }: RootTabScreenProps<"Home">) {
     </PageContainer>
   );
 }
+
+

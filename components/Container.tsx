@@ -31,10 +31,11 @@ export const GreetingsContainer = styled.View`
   align-items: center;
 `;
 
-export const Profile = styled.View`
+export const Profile = styled.Image`
   width: 70px;
   height: 70px;
   border-radius: 999px;
+  border: 1px solid #f2f2f2;
   background-color: #f2f2f2;
 `;
 
