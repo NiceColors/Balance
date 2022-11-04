@@ -38,7 +38,6 @@ const user = useRecoilValue(recoilAuth)
 
 
 
-
       <Text>Última Medição em 14/05/22</Text>
       <FoodTracking>
         <FTHeaderContainer>

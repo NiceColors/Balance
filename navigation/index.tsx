@@ -16,6 +16,7 @@ import { recoilAuth } from '../hooks/recoilAuth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import jwt from 'jwt-decode'
+import FirstAccess from '../screens/FirstAccess';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -29,6 +30,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   const [logged, setLogged] = React.useState(false)
+  const [firstAccess, setFirstAccess] = React.useState(true)
   const [token, setToken] = useRecoilState(recoilAuth)
 
   const getData = async () => {
@@ -69,6 +71,7 @@ function RootNavigator() {
       setLogged(true)
     }
   },[token])
+
   
   return (
     <Stack.Navigator
@@ -80,8 +83,14 @@ function RootNavigator() {
         <Stack.Screen name="SignIn" component={Login} options={{ headerShown: false }} />
       ) : (
       <>
-        <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+       {firstAccess ? (
+          <Stack.Screen name="Welcome" component={FirstAccess} options={{ headerShown: false }} />
+       ) : (
+        <>
+          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+          <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+        </>
+       )}
       </>
       )}
     </Stack.Navigator>
