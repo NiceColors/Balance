@@ -1,18 +1,46 @@
-import React from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { ref, set } from 'firebase/database';
+import React, { useState } from 'react'
 import { StyleSheet } from 'react-native';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components/native';
 import {  PageContainer } from '../components/Container';
 import { Text } from '../components/Themed';
+import { appDB } from '../config/firebaseConfig';
+import { recoilAuth } from '../hooks/recoilAuth';
 import { RootStackScreenProps } from '../types';
 
 type InfoType = {
-    age: undefined | string,
+  birthdate: undefined | string,
     weight: undefined | string,
     height: undefined | string,
 }
+
+export const birthDateFormat = (valorInput: any) => {
+  let value = valorInput.replace(/\D/g, "")
+  .replace(/(\d{2})(\d)/, "$1/$2")
+  .replace(/(\d{2})(\d)/, "$1/$2")
+  .replace(/(\d{2})(\d)/, "$1")
+  if (value.split('/')[2]) {
+    if (value.split('/')[2].length > 2) {
+     value = value.slice(0, -1)
+  }
+  }
+
+  return value
+  
+
+}
+
+export const cpfMask = (valorInput: any) => {
+  
+}
+
 export default function FirstAccess({ navigation }: RootStackScreenProps<'NotFound'>) {
+    const user = useRecoilValue(recoilAuth)
     const [info, setInfo] = React.useState<InfoType>({
-        age: undefined,
+        birthdate: "",
         weight: undefined,
         height: undefined,
     })
@@ -22,17 +50,27 @@ export default function FirstAccess({ navigation }: RootStackScreenProps<'NotFou
         return teste
         
     }
+
+    const saveDataInDB = async () => {
+        
+            
+            set(ref(appDB, 'users/' + user.sub + '/base-data'), {
+                ...info,
+            });
+    }
+
+
   return (
     <PageContainer style={styles.container}>
-          <Title>Informações base</Title>
+          <Title>Olá, {user.given_name}!</Title>
           <Text>Esses dados são utilizados para criar as medidas iniciais do sistema.</Text>
          <ContentContainer>
             <InputContainer>
                     <Input
-                    onChangeText={(text: string) => setInfo({...info, age: text})}
+                    onChangeText={(text: string) => setInfo({...info, birthdate: text})}
+                    value={birthDateFormat(info.birthdate)}
                     keyboardType='number-pad'
-                    placeholder="Idade"
-                    onC
+                    placeholder="Data de nascimento"
                     />
                     <Input
                     onChangeText={(text: string) => setInfo({...info, weight: text})}
@@ -53,7 +91,7 @@ export default function FirstAccess({ navigation }: RootStackScreenProps<'NotFou
                         borderless: false,
                         radius: 50,
                       }} 
-                      onPress={() => {}}
+                      onPress={() => {saveDataInDB()}}
                       disabled={checkIfAllFieldsAreFilled()}
                      >
                         <Text style={{color: 'black'}}>Salvar</Text>
