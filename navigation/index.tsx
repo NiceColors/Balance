@@ -10,19 +10,13 @@ import useColorScheme from '../hooks/useColorScheme';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import Config from '../screens/Config';
 import Home from '../screens/Home';
-import { RootStackParamList, RootTabParamList, TUserToken } from '../types';
+import { RootStackParamList, RootTabParamList } from '../types';
 import Login from '../screens/Login';
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { recoilAuth } from '../hooks/recoilAuth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as LocalAuthentication from 'expo-local-authentication';
-import jwt from 'jwt-decode'
-import FirstAccess from '../screens/FirstAccess';
-import { firstAccessRecoilHook } from '../hooks/recoilFirstAccess';
-import { child, get, ref } from 'firebase/database';
-import { appDB } from '../config/firebaseConfig';
+import { useRecoilValue } from 'recoil'
+import { recoilAuth } from '../recoil/recoilAuth';
+import getSavedJWT from '../helpers/getSavedToken';
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+export default  function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
     <NavigationContainer
       theme={DarkTheme}>
@@ -32,87 +26,50 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-function RootNavigator() {
+
+ function RootNavigator() {
+  const user = useRecoilValue(recoilAuth)
   const [logged, setLogged] = React.useState(false)
-  const [token, setToken] = useRecoilState(recoilAuth)
-  const [firstAccess, setFirstAccess] = useRecoilState(firstAccessRecoilHook)
-
-  const getData = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@storage_Key')
-
-      if(value !== null) {
-        if (await LocalAuthentication.getEnrolledLevelAsync() !== 2) {
-          return
-        }
-        if (await LocalAuthentication.isEnrolledAsync() !== true) {
-          return
-        }
-       const auth =  await LocalAuthentication.authenticateAsync({
-        cancelLabel: "Cancelar",
-        disableDeviceFallback: true,
-        promptMessage: "Use a digital para continuar"
-       })
-
-       const user: TUserToken = jwt(value)
-
-
-       get(child(ref(appDB), `users/${user.sub}`)).then((snapshot) => {
-        if (snapshot.exists()) {
-          setFirstAccess(snapshot.val().firstAccess)
-        } else {
-          console.log("No data available");
-        }
-      }).catch((error) => {
-        console.error(error);
-      });
-
-       if (auth.success === true) {
-          setToken(user)
-          setLogged(true)
-       }
-      }
+ 
+  async function checkLogged() {
+      if (user) {
+      setLogged(true)
       return
-    } catch(e) {
-      // error reading value
-    }
+      }
+
+      const token = await getSavedJWT()
+      if (token) {
+        setLogged(true)
+        return
+      }
+
+      setLogged(false)
   }
 
   React.useEffect(() => {
-   if (token) {
-      getData()
-   }
-  },[])
-
-  React.useEffect(() => {
-    if (token) {
-      setLogged(true)
-    } else {
-      setLogged(false)
-    }
-  },[token])
+    checkLogged()
+  },[user])
   
   return (
     <Stack.Navigator
       defaultScreenOptions={{
-        headerShown: false
+        headerShown: false,
+        animation: 'slide_from_left'
       }}
     >
-      {!logged ? (
-        <Stack.Screen name="SignIn" component={Login} options={{ headerShown: false }} />
-      ) : (
-      <>
-       {firstAccess === true ? (
-          <Stack.Screen name="Welcome" component={FirstAccess} options={{ headerShown: false }} />
-       ) : (
-        <>
-          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+      {logged === false ? (
+        <Stack.Screen name="SignIn" component={Login} options={{ headerShown: false,
+         animationTypeForReplace: 'push',
+        }} />
+      ): 
+         ( <>
+          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false,
+      }} />
           <Stack.Screen name="Config" component={Config} options={{ headerShown: false }} />
           <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-        </>
-       )}
-      </>
-      )}
+          </>)
+      }
+        
     </Stack.Navigator>
   );
 }
@@ -127,6 +84,7 @@ function BottomTabNavigator() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
         headerShown: false,
+        
       }}>
       <>
       <BottomTab.Screen
@@ -137,6 +95,7 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         })}
       />
+      
       
       </>
     </BottomTab.Navigator>

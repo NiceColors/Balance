@@ -11,6 +11,7 @@ import {getDatabase} from "firebase/database";
 const firebaseConfig = {
     apiKey: "AIzaSyBsEDy-Gs2nHdNRha-oMO3TNuLWUY8kevs",
     authDomain: "balance-felpoca.firebaseapp.com",
+    databaseURL: "https://balance-felpoca-default-rtdb.firebaseio.com",
     projectId: "balance-felpoca",
     storageBucket: "balance-felpoca.appspot.com",
     messagingSenderId: "236524620652",

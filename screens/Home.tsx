@@ -1,4 +1,4 @@
-import { View, ScrollView, Image } from "react-native";
+import { View, ScrollView, Image, Pressable } from "react-native";
 import { useRecoilValue } from "recoil";
 import { Button } from "../components/Button";
 import {
@@ -18,26 +18,27 @@ import {
   SubTitle,
 } from "../components/Container";
 import { Text } from "../components/Themed";
-import { recoilAuth } from "../hooks/recoilAuth";
+import { recoilAuth } from "../recoil/recoilAuth";
 import { RootTabScreenProps } from "../types";
 
 export default function Home({ navigation }: RootTabScreenProps<"Home">) {
 const user = useRecoilValue(recoilAuth)
+
 
   return (
     <PageContainer>
       <GreetingsContainer>
         <Greetings>
           <Text>Bem vindo de volta</Text>
-          <Title>{user?.given_name}</Title>
+          <Title>{user?.name}</Title>
         </Greetings>
-        <Button
+        <Pressable
         onPress={() => navigation.navigate('Config')}>
         <Profile source={{
           uri: user?.picture
         }}>
         </Profile>
-            </Button>
+            </Pressable>
         
       </GreetingsContainer>
 

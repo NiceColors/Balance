@@ -5,21 +5,18 @@ import { Button } from '../components/Button';
 import { Content } from '../components/Container';
 
 import { Text, View } from '../components/Themed';
-import { recoilAuth } from '../hooks/recoilAuth';
+import useLogout from '../hooks/useLogout';
+import { recoilAuth } from '../recoil/recoilAuth';
 import { RootStackScreenProps } from '../types';
 
 export default function NotFoundScreen({ navigation }: RootStackScreenProps<'Config'>) {
-  const [token, setToken] = useRecoilState(recoilAuth)
+const {logOut} = useLogout()
 
 
-  const loggoff = async () => {
-    await AsyncStorage.clear()
-    setToken(null)
-  }
   return (
     <Content>
       <View style={{marginTop: 200}}>
-         <Button onPress={() => {loggoff()}}>
+         <Button onPress={() => {logOut()}}>
           <Text>
           Sair
 

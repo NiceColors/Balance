@@ -1,17 +1,34 @@
-import { View, Image, StyleSheet, StatusBar } from 'react-native'
-import Logo from '../assets/images/splash.png'
+import jwtDecode from 'jwt-decode';
+import React from 'react'
+import { View, StyleSheet, StatusBar } from 'react-native'
+import { useSetRecoilState } from 'recoil';
 import { Button } from '../components/Button';
 import { Text } from '../components/Themed';
-import useAuth from '../hooks/useAuth';
+import getSavedJWT from '../helpers/getSavedToken';
+import { recoilAuth } from '../recoil/recoilAuth';
+import useLogin from '../hooks/useLogin';
+import { RootStackScreenProps } from '../types';
 
 
-export default function Login() {
-  const {request, promptAsync} = useAuth()
+export default function Login({ navigation }: RootStackScreenProps<'SignIn'>) {
+  const setToken = useSetRecoilState(recoilAuth)
+  const { promptAsync, token } = useLogin()
+
+  const handleLogin = async () => {
+    const savedJWT =  await getSavedJWT()
+    if (savedJWT ) {
+      console.log(jwtDecode(savedJWT));
+      setToken(jwtDecode(savedJWT))
+    }
+  }
+
+  React.useEffect(() => {
+    handleLogin()
+  },[token])
 
 
   return (
     <View style={styles.container }>
-      <Image source={Logo} style={styles.tinyLogo}/>
       <Button 
       android_ripple={{
         color: '#ffffff68',
@@ -19,10 +36,9 @@ export default function Login() {
         radius: 50,
       }} 
       style={styles.loginButton} 
-      disabled={!request}
       onPress={ () => {
-        promptAsync();
-      }}>
+        promptAsync()
+}}>
         <Text>Login with Google</Text>
       </Button>
     </View>
