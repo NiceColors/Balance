@@ -1,9 +1,9 @@
 import {atom} from 'recoil'
-import { TUserToken } from '../types';
+import { UserValueCredentials } from '../types';
 
 const recoilAuth = atom({
     key: 'recoilAuth', // unique ID (with respect to other atoms/selectors)
-    default: null as TUserToken | null, // default value (aka initial value)
+    default: null as UserValueCredentials | null, // default value (aka initial value)
   });
 
   export {recoilAuth}

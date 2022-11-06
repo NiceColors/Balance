@@ -7,9 +7,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components/native';
 import {  PageContainer } from '../components/Container';
 import { Text } from '../components/Themed';
-import { appDB } from '../config/firebaseConfig';
-import { recoilAuth } from '../hooks/recoilAuth';
-import { firstAccessRecoilHook } from '../hooks/recoilFirstAccess';
+import { recoilAuth } from '../recoil/recoilAuth';
 import { RootStackScreenProps } from '../types';
 
 type InfoType = {
@@ -54,23 +52,13 @@ export default function FirstAccess({ navigation }: RootStackScreenProps<'Welcom
     }
 
     const saveDataInDB = async () => {
-        
-            set(ref(appDB, 'users/' + user.sub), {
-              firstAccess: false
-          });
-            set(ref(appDB, 'users/' + user.sub + '/base-data'), {
-                ...info,
-            });
             setFirstAccess(false)
-
-
-
     }
 
 
   return (
     <PageContainer style={styles.container}>
-          <Title>Olá, {user.given_name}!</Title>
+          <Title>Olá, {user?.name}!</Title>
           <Text>Esses dados são utilizados para criar as medidas iniciais do sistema.</Text>
          <ContentContainer>
             <InputContainer>
