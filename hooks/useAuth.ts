@@ -20,7 +20,6 @@ function useAuth() {
         try {
           await AsyncStorage.setItem('@storage_Key', JSON.stringify(value))
           if(value.idToken) {
-           console.log();
            setToken(jwt(value?.idToken))
           }
           

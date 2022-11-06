@@ -8,6 +8,7 @@ import { ColorSchemeName } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import NotFoundScreen from '../screens/NotFoundScreen';
+import Config from '../screens/Config';
 import Home from '../screens/Home';
 import { RootStackParamList, RootTabParamList, TUserToken } from '../types';
 import Login from '../screens/Login';
@@ -37,12 +38,9 @@ function RootNavigator() {
   const [firstAccess, setFirstAccess] = useRecoilState(firstAccessRecoilHook)
 
   const getData = async () => {
-    setLogged(false)
     try {
       const value = await AsyncStorage.getItem('@storage_Key')
 
-     
-      
       if(value !== null) {
         if (await LocalAuthentication.getEnrolledLevelAsync() !== 2) {
           return
@@ -81,15 +79,18 @@ function RootNavigator() {
   }
 
   React.useEffect(() => {
-    if (!token.name) {
+   if (token) {
       getData()
-    }
+   }
   },[])
 
   React.useEffect(() => {
-  },[firstAccess])
-  
-  
+    if (token) {
+      setLogged(true)
+    } else {
+      setLogged(false)
+    }
+  },[token])
   
   return (
     <Stack.Navigator
@@ -106,6 +107,7 @@ function RootNavigator() {
        ) : (
         <>
           <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+          <Stack.Screen name="Config" component={Config} options={{ headerShown: false }} />
           <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
         </>
        )}

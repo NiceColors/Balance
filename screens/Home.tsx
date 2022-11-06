@@ -1,5 +1,6 @@
 import { View, ScrollView, Image } from "react-native";
 import { useRecoilValue } from "recoil";
+import { Button } from "../components/Button";
 import {
   FoodTracking,
   FTHeaderContainer,
@@ -28,12 +29,16 @@ const user = useRecoilValue(recoilAuth)
       <GreetingsContainer>
         <Greetings>
           <Text>Bem vindo de volta</Text>
-          <Title>{user.given_name}</Title>
+          <Title>{user?.given_name}</Title>
         </Greetings>
+        <Button
+        onPress={() => navigation.navigate('Config')}>
         <Profile source={{
-            uri: user.picture
-          }}>
+          uri: user?.picture
+        }}>
         </Profile>
+            </Button>
+        
       </GreetingsContainer>
 
 

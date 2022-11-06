@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
   },
   tinyLogo: {
+    height: 100,
     alignSelf: 'center',
   },
   loginButton: {

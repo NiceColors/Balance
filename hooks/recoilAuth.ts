@@ -3,7 +3,7 @@ import { TUserToken } from '../types';
 
 const recoilAuth = atom({
     key: 'recoilAuth', // unique ID (with respect to other atoms/selectors)
-    default: {} as TUserToken, // default value (aka initial value)
+    default: null as TUserToken | null, // default value (aka initial value)
   });
 
   export {recoilAuth}
