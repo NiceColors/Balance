@@ -3,12 +3,13 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { ref, set } from 'firebase/database';
 import React, { useState } from 'react'
 import { StyleSheet } from 'react-native';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components/native';
 import {  PageContainer } from '../components/Container';
 import { Text } from '../components/Themed';
 import { appDB } from '../config/firebaseConfig';
 import { recoilAuth } from '../hooks/recoilAuth';
+import { firstAccessRecoilHook } from '../hooks/recoilFirstAccess';
 import { RootStackScreenProps } from '../types';
 
 type InfoType = {
@@ -37,8 +38,9 @@ export const cpfMask = (valorInput: any) => {
   
 }
 
-export default function FirstAccess({ navigation }: RootStackScreenProps<'NotFound'>) {
+export default function FirstAccess({ navigation }: RootStackScreenProps<'Welcome'>) {
     const user = useRecoilValue(recoilAuth)
+    const setFirstAccess = useSetRecoilState(firstAccessRecoilHook)
     const [info, setInfo] = React.useState<InfoType>({
         birthdate: "",
         weight: undefined,
@@ -53,10 +55,16 @@ export default function FirstAccess({ navigation }: RootStackScreenProps<'NotFou
 
     const saveDataInDB = async () => {
         
-            
+            set(ref(appDB, 'users/' + user.sub), {
+              firstAccess: false
+          });
             set(ref(appDB, 'users/' + user.sub + '/base-data'), {
                 ...info,
             });
+            setFirstAccess(false)
+
+
+
     }
 
 

@@ -12,7 +12,7 @@ function useAuth() {
 
     const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
         {
-          clientId: '584558764987-dqvmsacv8sm5sf2rdcn6mhufgtmfg6o3.apps.googleusercontent.com',
+          clientId: '236524620652-84ckk127e90n1lleeabdct9faaibe5kl.apps.googleusercontent.com',
         },
       );
 

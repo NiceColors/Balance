@@ -17,6 +17,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import jwt from 'jwt-decode'
 import FirstAccess from '../screens/FirstAccess';
+import { firstAccessRecoilHook } from '../hooks/recoilFirstAccess';
+import { child, get, ref } from 'firebase/database';
+import { appDB } from '../config/firebaseConfig';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -30,12 +33,16 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   const [logged, setLogged] = React.useState(false)
-  const [firstAccess, setFirstAccess] = React.useState(true)
   const [token, setToken] = useRecoilState(recoilAuth)
+  const [firstAccess, setFirstAccess] = useRecoilState(firstAccessRecoilHook)
 
   const getData = async () => {
+    setLogged(false)
     try {
       const value = await AsyncStorage.getItem('@storage_Key')
+
+     
+      
       if(value !== null) {
         if (await LocalAuthentication.getEnrolledLevelAsync() !== 2) {
           return
@@ -49,12 +56,25 @@ function RootNavigator() {
         promptMessage: "Use a digital para continuar"
        })
 
+       const user: TUserToken = jwt(value)
+
+
+       get(child(ref(appDB), `users/${user.sub}`)).then((snapshot) => {
+        if (snapshot.exists()) {
+          setFirstAccess(snapshot.val().firstAccess)
+        } else {
+          console.log("No data available");
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
+
        if (auth.success === true) {
-          const user: TUserToken = jwt(value)
           setToken(user)
           setLogged(true)
        }
       }
+      return
     } catch(e) {
       // error reading value
     }
@@ -65,13 +85,11 @@ function RootNavigator() {
       getData()
     }
   },[])
-  
-  React.useEffect(() => {
-    if (token.name) {
-      setLogged(true)
-    }
-  },[token])
 
+  React.useEffect(() => {
+  },[firstAccess])
+  
+  
   
   return (
     <Stack.Navigator
@@ -83,7 +101,7 @@ function RootNavigator() {
         <Stack.Screen name="SignIn" component={Login} options={{ headerShown: false }} />
       ) : (
       <>
-       {firstAccess ? (
+       {firstAccess === true ? (
           <Stack.Screen name="Welcome" component={FirstAccess} options={{ headerShown: false }} />
        ) : (
         <>

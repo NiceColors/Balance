@@ -9,13 +9,12 @@ import {getDatabase} from "firebase/database";
 
 // Initialize Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyCRxx1mOUL0iz2SAjK37PAYESf04qQD12k",
-    authDomain: "balance-d3db6.firebaseapp.com",
-    databaseURL: "https://balance-d3db6-default-rtdb.firebaseio.com",
-    projectId: "balance-d3db6",
-    storageBucket: "balance-d3db6.appspot.com",
-    messagingSenderId: "584558764987",
-    appId: "1:584558764987:web:ed92ccad77a9ae60ac5a9e"
+    apiKey: "AIzaSyBsEDy-Gs2nHdNRha-oMO3TNuLWUY8kevs",
+    authDomain: "balance-felpoca.firebaseapp.com",
+    projectId: "balance-felpoca",
+    storageBucket: "balance-felpoca.appspot.com",
+    messagingSenderId: "236524620652",
+    appId: "1:236524620652:web:7b1a106bdc8f41533bc149"
 };
 
 const app = initializeApp(firebaseConfig);
